@@ -1,15 +1,13 @@
-# docker
+# http-munki
 
-Docker service definitions for docker-compose.
+Docker service definitions for speedtest.
 
-To update a docker container change to the desired sub directory and run following command:
+The speedtest use the local config directory. Run following command in this directory: 
 
 ```
 docker-compose up -d
 ```
 
-Some compose definition folders contains an install script to use an `env.txt` file with environment definitions:
+After installing you will need to download the speedtest binary and extract it in the directory `config/www/app/Bin`, see https://github.com/peanutbother/docker-speedtest/issues/1.
 
-```
-./install.sh
-```
+see https://hub.docker.com/r/bricksoft/speedtest
