@@ -1,4 +1,4 @@
-# http-munki
+# docker-speedtest
 
 Docker service definitions for speedtest.
 
