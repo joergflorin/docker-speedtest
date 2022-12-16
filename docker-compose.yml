@@ -1,19 +1,51 @@
-version: '3.3'
+version: "3"
 services:
-    speedtest:
-        container_name: speedtest
-        image: bricksoft/speedtest
-        ports:
-            - 8765:80
-        volumes:
-            - ./config:/config
-        environment:
-            - TZ=
-            - OOKLA_EULA_GDPR=true
-        restart: unless-stopped
-        healthcheck:
-          test: curl --fail http://localhost || exit 1
-          interval: 60s
-          retries: 5
-          start_period: 20s
-          timeout: 10s
+
+  influxdb:
+    container_name: speedtest-influxdb
+    build:
+      context: .
+      dockerfile: Dockerfile-influx
+    volumes:
+      - influxdb:/var/lib/influxdb
+    expose:
+      - 8083
+      - 8086
+    hostname: rpi-influx
+    networks:
+      - monitoring
+    environment:
+      - INFLUXDB_ADMIN_USER="${DB_USERNAME}"
+      - INFLUXDB_ADMIN_PASSWORD="${DB_PASSWORD}"
+      - INFLUXDB_DB="speedtest"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8086 || exit 1"]
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+  speedtest:
+    container_name: speedtest
+    image: robinmanuelthiel/speedtest:latest
+    networks:
+      - monitoring
+    environment:
+      - LOOP=true
+      - LOOP_DELAY=1800
+      - DB_SAVE=true
+      - DB_HOST=http://rpi-influx:8086
+      - DB_NAME=speedtest
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    privileged: true # Needed for 'sleep' in the loop
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb:
+
+networks:
+  monitoring:
+    external: true
+
