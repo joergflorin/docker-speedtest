@@ -7,15 +7,15 @@ services:
     image: robinmanuelthiel/speedtest:latest
     networks:
       - monitoring
-    env_file:
-      - ./speedtest.env
     environment:
-      - LOOP=true
-      - LOOP_DELAY=7200
-      - DB_SAVE=true
-      - DB_HOST=http://influxdb-speedtest:8086
-      - DB_NAME=speedtest
-      - TZ=Europe/Berlin
+      LOOP: "true"
+      LOOP_DELAY: 7200
+      DB_SAVE: "true"
+      DB_HOST: http://influxdb-speedtest:8086
+      DB_NAME: speedtest
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      TZ: Europe/Berlin
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       influxdb:
@@ -35,11 +35,11 @@ services:
     hostname: influxdb-speedtest
     networks:
       - monitoring
-    env_file:
-      - ./speedtest.env
     environment:
-      - INFLUXDB_DB="speedtest"
-      - TZ=Europe/Berlin
+      INFLUXDB_DB: speedtest
+      INFLUXDB_ADMIN_USER: ${DB_USERNAME}
+      INFLUXDB_ADMIN_PASSWORD:  ${DB_PASSWORD}
+      TZ: Europe/Berlin
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 8086 || exit 1"]
       interval: 60s

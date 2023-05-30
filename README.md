@@ -2,7 +2,7 @@
 
 Docker service definitions for speedtest.
 
-Copy and configure `sample.speedtest.env` to `speedtest.env`.
+Copy and configure `sample.env` to `.env`.
 Run following command in this directory: 
 
 ```
